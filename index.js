@@ -18,6 +18,18 @@ client.on("message", msg => {
       .catch(error => {
         console.log(error);
       });
+  } else if (command == "help") {
+    msg.reply(`\n-----------Command List-----------\n
+      #1 global_stat\n
+      #2 total_stat <Country-Code>: total_stat NP\n
+      #3 total_cases <Country-Code>\n
+      #4 total_recovered <Country-Code>\n
+      #5 total_unresolved <Country-Code>\n
+      #6 total_deaths <Country-Code>\n
+      #7 total_new_cases_today <Country-Code>\n
+      #8 total_new_deaths_today <Country-Code>\n
+      #9 total_active_cases <Country-Code>\n
+      #10 total_serious_cases <Country-Code>`);
   } else {
     axios
       .get(`https://thevirustracker.com/free-api?countryTotal=${args}`)
