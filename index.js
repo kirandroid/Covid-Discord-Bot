@@ -6,17 +6,17 @@ const client = new Discord.Client();
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
-client.on("message", msg => {
+client.on("message", (msg) => {
   if (!msg.content.startsWith("-")) return;
   const args = msg.content.slice(1).split(/ +/);
   const command = args.shift().toLowerCase();
   if (command == "global_stat") {
     axios
       .get(`https://thevirustracker.com/free-api?global=stats`)
-      .then(response => {
+      .then((response) => {
         printAll(msg, response.data.results[0], true);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   } else if (command == "help") {
@@ -37,17 +37,46 @@ client.on("message", msg => {
         ).codeblock()
       )
     );
+  } else if (command == "today") {
+    axios
+      .get(`https://thevirustracker.com/free-api?countryTimeline=${args}`)
+      .then((response) => {
+        var timelineData = response.data.timelineitems[0];
+        var todayKey = Object.keys(timelineData)[
+          Object.keys(timelineData).length - 2
+        ];
+        var today = response.data.timelineitems[0][todayKey];
+
+        msg.reply(
+          String(
+            new Text(
+              `${response.data.countrytimelinedata[0].info.title}\n
+            Date: ${todayKey}\n
+             New Daily Cases : ${today.new_daily_cases}\n
+             New Daily Deaths: ${today.new_daily_deaths}\n
+             Total Cases: ${today.total_cases}\n
+             Total Recoveries: ${today.total_recoveries}\n
+             Total Deaths: ${today.total_deaths}\n
+            
+             `
+            ).codeblock()
+          )
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   } else {
     axios
       .get(`https://thevirustracker.com/free-api?countryTotal=${args}`)
-      .then(response => {
+      .then((response) => {
         if (command == "total_stat") {
           printAll(msg, response.data.countrydata[0], false);
         } else {
           printResult(msg, command, response.data.countrydata[0]);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   }
@@ -83,7 +112,7 @@ function printResult(msg, command, response) {
           .replace(/_/g, " ")
           .toLowerCase()
           .split(" ")
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(" ")} in ${response.info.title} is ${response[command]}`
       ).codeblock()
     )
