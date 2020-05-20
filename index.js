@@ -33,7 +33,8 @@ client.on("message", (msg) => {
 #7 -total_new_cases_today <Country-Code>\n
 #8 -total_new_deaths_today <Country-Code>\n
 #9 -total_active_cases <Country-Code>\n
-#10 -total_serious_cases <Country-Code>`
+#10 -total_serious_cases <Country-Code>\n
+#11 -today <Country-Code>`
         ).codeblock()
       )
     );
