@@ -5,6 +5,18 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  setInterval(function () {
+    axios
+    .get(`https://thevirustracker.com/free-api?countryTotal=np`)
+    .then((response) => {
+      client.user.setPresence({activity: {name: `${response.data.countrydata[0].total_cases} Cases in Nepal`, type: 'WATCHING'}, status : 'online'});
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+    
+  }, 300000)
 });
 client.on("message", (msg) => {
   if (!msg.content.startsWith("-")) return;
