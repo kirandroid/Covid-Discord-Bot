@@ -3,20 +3,25 @@ const Text = require("discord-markup");
 const axios = require("axios");
 const Discord = require("discord.js");
 const client = new Discord.Client();
+
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
   setInterval(function () {
     axios
-    .get(`https://thevirustracker.com/free-api?countryTotal=np`)
-    .then((response) => {
-      client.user.setPresence({activity: {name: `${response.data.countrydata[0].total_cases} Cases in Nepal`, type: 'WATCHING'}, status : 'online'});
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-
-    
-  }, 300000)
+      .get(`https://thevirustracker.com/free-api?countryTotal=np`)
+      .then((response) => {
+        client.user.setPresence({
+          activity: {
+            name: `${response.data.countrydata[0].total_cases} Cases in Nepal`,
+            type: "WATCHING",
+          },
+          status: "online",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, 300000);
 });
 client.on("message", (msg) => {
   if (!msg.content.startsWith("-")) return;
@@ -79,6 +84,34 @@ client.on("message", (msg) => {
       .catch((error) => {
         console.log(error);
       });
+  } else if (command == "rich") {
+    const exampleEmbed = new Discord.MessageEmbed()
+      .setColor("#8a0303")
+      .setTitle("Total Cases in Nepal")
+      .setURL("https://thevirustracker.com/")
+      .setAuthor("Corona Bot", "https://i.ibb.co/mN7xvrX/virus.png")
+      .setThumbnail("https://www.countryflags.io/np/shiny/64.png")
+      .addFields(
+        { name: "🤒 Cases", value: "13564" },
+        { name: "💀 Deaths", value: "29" }
+      )
+      .addFields(
+        { name: "😄 Recovered", value: "3194", inline: true },
+        { name: "🧪 Unresolved", value: "0", inline: true },
+        { name: "💉 Serious Case", value: "0", inline: true }
+      )
+      .addFields(
+        { name: "😷 New Cases", value: "0", inline: true },
+        { name: "🩸 New Death", value: "0", inline: true },
+        { name: "🩺 Active Cases", value: "29", inline: true }
+      )
+      .setTimestamp()
+      .setFooter(
+        "TheVirusTracker",
+        "https://thevirustracker.com/images/virus1600.png"
+      );
+
+    return msg.reply(exampleEmbed);
   } else {
     axios
       .get(`https://thevirustracker.com/free-api?countryTotal=${args}`)
@@ -97,23 +130,68 @@ client.on("message", (msg) => {
 
 function printAll(msg, response, isGlobal) {
   return msg.reply(
-    String(
-      new Text(
+    new Discord.MessageEmbed()
+      .setColor("#8a0303")
+      // .setTitle(`Total Cases in ${response.info.title}`)
+      .setTitle(
         `${
           !isGlobal
-            ? `Country : ${response.info.title}\n`
-            : "---------Global Stats---------"
+            ? `Total Cases in ${response.info.title}`
+            : "Total Global Cases"
+        }`
+      )
+      .setURL("https://thevirustracker.com/")
+      .setAuthor("Corona Bot", "https://i.ibb.co/mN7xvrX/virus.png")
+      .setThumbnail(
+        `${
+          !isGlobal
+            ? `https://www.countryflags.io/${response.info.code}/shiny/64.png`
+            : "https://hotemoji.com/images/dl/l/world-emoji-by-google.png"
+        }`
+      )
+      .addFields(
+        { name: "🤒 Cases", value: `${response.total_cases}` },
+        { name: "💀 Deaths", value: `${response.total_deaths}` }
+      )
+      .addFields(
+        {
+          name: "😄 Recovered",
+          value: `${response.total_recovered}`,
+          inline: true,
+        },
+        {
+          name: "🧪 Unresolved",
+          value: `${response.total_unresolved}`,
+          inline: true,
+        },
+        {
+          name: "💉 Serious Case",
+          value: `${response.total_serious_cases}`,
+          inline: true,
         }
-    Total Cases : ${response.total_cases}\n
-    Total Recovered : ${response.total_recovered}\n
-    Total Unresolved : ${response.total_unresolved}\n
-    Total Deaths : ${response.total_deaths}\n
-    Total New Cases Today : ${response.total_new_cases_today}\n
-    Total New Deaths Today : ${response.total_new_deaths_today}\n
-    Total Active Cases : ${response.total_active_cases}\n
-    Total Serious Cases : ${response.total_serious_cases}`
-      ).codeblock()
-    )
+      )
+      .addFields(
+        {
+          name: "😷 New Cases",
+          value: `${response.total_new_cases_today}`,
+          inline: true,
+        },
+        {
+          name: "🩸 New Death",
+          value: `${response.total_new_deaths_today}`,
+          inline: true,
+        },
+        {
+          name: "🧬 Active Cases",
+          value: `${response.total_active_cases}`,
+          inline: true,
+        }
+      )
+      .setTimestamp()
+      .setFooter(
+        "TheVirusTracker",
+        "https://thevirustracker.com/images/virus1600.png"
+      )
   );
 }
 
